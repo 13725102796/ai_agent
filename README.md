@@ -2,7 +2,9 @@
 
 LitAgent 是一个基于 **LangGraph** 和 **FastAPI** 构建的智能写作 Agent，它通过模拟人类的创作心流（Search -> Strategize -> Write -> Edit），结合 **DeepSeek** 和 **Claude** 的能力，自动生成高质量、有深度、且具备真实数据支撑的文章。
 
-![LitAgent Demo](https://via.placeholder.com/800x400?text=LitAgent+Demo+Capture)
+[![LitAgent Demo](https://via.placeholder.com/800x400?text=LitAgent+Demo+Capture)](demo.mov)
+
+[🎥 点击观看演示视频 (Watch Demo Video)](demo.mov)
 
 ## ✨ 核心特性
 
@@ -34,8 +36,7 @@ LitAgent 是一个基于 **LangGraph** 和 **FastAPI** 构建的智能写作 Age
 ### 1. 克隆项目
 
 ```bash
-git clone https://github.com/your-username/lit-agent.git
-cd lit-agent
+git clone https://github.com/13725102796/ai_agent.git
 ```
 
 ### 2. 后端设置

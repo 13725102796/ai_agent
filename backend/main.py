@@ -11,7 +11,7 @@ import os
 from openai import OpenAI
 import os
 from openai import OpenAI
-from duckduckgo_search import DDGS
+from ddgs import DDGS
 
 app = FastAPI(title="LitAgent API")
 

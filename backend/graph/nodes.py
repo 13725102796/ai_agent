@@ -5,7 +5,7 @@ from .state import AgentState
 def _ask_claude(prompt: str, system_prompt: str | None = None) -> str:
     """Call local Claude Code CLI and return text response."""
     import os
-    from duckduckgo_search import DDGS
+    from ddgs import DDGS
     env = os.environ.copy()
     env["PATH"] = "/Users/maidong/.local/bin:" + env.get("PATH", "")
     env["HOME"] = os.path.expanduser("~")
@@ -38,7 +38,7 @@ def researcher_node(state: AgentState):
 
     
     # Perform Real Web Search
-    from duckduckgo_search import DDGS
+    from ddgs import DDGS
     try:
         import json
         with DDGS() as ddgs:

@@ -11,15 +11,20 @@ import os
 from openai import OpenAI
 import os
 from openai import OpenAI
+# Try to import Antigravity Client, assuming it's installed
+try:
+    from google_antigravity.client import Client as AntigravityClient
+except ImportError:
+    print("Warning: google_antigravity not installed. Please install it first.")
+    AntigravityClient = None
+
 from ddgs import DDGS
 
 app = FastAPI(title="LitAgent API")
 
-# DeepSeek client
-deepseek_client = OpenAI(
-    api_key=os.getenv("DEEPSEEK_API_KEY"),
-    base_url="https://api.deepseek.com"
-)
+# Antigravity Client (replacing DeepSeek)
+# Note: Ensure ~/.google_antigravity_credentials.json exists or run login()
+antigravity_client = AntigravityClient() if AntigravityClient else None
 
 app.add_middleware(
     CORSMiddleware,
@@ -40,26 +45,40 @@ async def root():
 
 
 def stream_deepseek(prompt: str, system_prompt: str | None = None):
-    """Stream DeepSeek API output."""
-    messages = []
+    """
+    Stream output using Google Antigravity (Gemini 3 Pro High).
+    Function name kept for compatibility with existing calls.
+    """
+    if not antigravity_client:
+        yield {"type": "complete", "text": "Error: google_antigravity package not installed."}
+        return
+
+    # Combine system prompt if provided
+    final_prompt = prompt
+    full_system_prompt = None
+    
     if system_prompt:
-        messages.append({"role": "system", "content": system_prompt})
-    messages.append({"role": "user", "content": prompt})
+        # Antigravity client supports system_prompt arg now
+        full_system_prompt = system_prompt
 
     full_text = ""
-    response = deepseek_client.chat.completions.create(
-        model="deepseek-chat",
-        messages=messages,
-        stream=True,
-        temperature=0.8,
-        max_tokens=4096,
-    )
-
-    for chunk in response:
-        if chunk.choices and chunk.choices[0].delta.content:
-            text = chunk.choices[0].delta.content
-            full_text += text
-            yield {"type": "delta", "text": text}
+    try:
+        # User requested gemini-3-pro-high specifically.
+        # Note: If rate limited, client handles retry, or we could fallback to 'gemini-3-flash'
+        stream = antigravity_client.generate_content(
+            prompt=final_prompt,
+            model="gemini-3-pro-high",
+            system_prompt=full_system_prompt
+        )
+        
+        for text_chunk in stream:
+            if text_chunk:
+                full_text += text_chunk
+                yield {"type": "delta", "text": text_chunk}
+                
+    except Exception as e:
+        print(f"Antigravity Error: {e}")
+        yield {"type": "delta", "text": f"[Error: {str(e)}]"}
 
     yield {"type": "complete", "text": full_text}
 
